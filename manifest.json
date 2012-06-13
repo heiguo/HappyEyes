@@ -1,0 +1,15 @@
+{
+  "background_page": "background.html",
+  "browser_action": {
+    "default_icon": "icons/icon32.png",
+    "default_title": "Strict Readable Text"
+  },
+  "description": "One click and the web page will be more comfortable for reading",
+  "icons": {
+    "32": "icons/icon32.png",
+    "128": "icons/icon128.png"
+  },
+  "name": "Strict Readable Text",
+  "version": "0.1",
+  "permissions": ["tabs", "http://*/*", "https://*/*"]
+}
