@@ -26,16 +26,6 @@ function processBlocks(blocks) {
   }  
 }
 
-function processP() {
-  var paragraphs = document.getElementsByTagName("p");
-  processBlocks(paragraphs);
-}
-
-function processPRE() {
-  var pres = document.getElementsByTagName("pre");
-  processBlocks(pres);
-}
-
 function processLists(lists) {
   for (var i = 0; i < lists.length; i++) {
     var list = lists[i];
@@ -52,17 +42,21 @@ function processLists(lists) {
   }
 }
 
-function processOL() {
-  var ols = document.getElementsByTagName("ol");
-  processLists(ols);
+function process() {
+  var blocks = document.querySelectorAll("p, pre");
+  processBlocks(blocks);
+
+  var lists = document.querySelectorAll("ol, ul");
+  processLists(lists);
+
+  var iframes = document.querySelectorAll("iframe");
+  for (var i = 0; i < iframes.length; i++) {
+    var blocks = iframes[i].contentDocument.querySelectorAll("p, pre");
+    processBlocks(blocks);
+    
+    var lists = iframes[i].contentDocument.querySelectorAll("ol, ul");
+    processLists(lists);
+  }
 }
 
-function processUL() {
-  var uls = document.getElementsByTagName("ul");
-  processLists(uls);
-}
-
-processP();
-processPRE();
-processOL();
-processUL();
+process();
