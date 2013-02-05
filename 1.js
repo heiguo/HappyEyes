@@ -1,4 +1,4 @@
-var MAGIC_TEXT_LENGTH = 30;
+var MAGIC_TEXT_LENGTH = 50;
 
 // util function: get font size of an element
 function getElemWidth(elem) {
@@ -11,14 +11,20 @@ function getElemWidth(elem) {
 
 
 function reStyle(elem) {
-  //elem.style.fontFamily = "Corbel, Georgia, 'Microsoft Yahei'";
+  // elem.style.fontFamily = "Corbel, Georgia, 'Microsoft Yahei'";
+  // elem.style.textAlign = 'justify';
+  
+  // fuck helvetica
+  if ($(elem).css('font-family').toLowerCase().indexOf('arial') == 0 ||
+    $(elem).css('font-family').toLowerCase().indexOf('helvetica') == 0) {
+    $(elem).css('font-family', "Lucida Grande");
+  }
   elem.style.fontSize = '18px';
   elem.style.lineHeight = '175%';
   var width = parseFloat(getElemWidth(elem));
   if (width > 600) {
     elem.style.width = '600px';
   }
-//  elem.style.textAlign = 'justify';
 }
 
 function reStyleList(listElem) {
@@ -32,9 +38,21 @@ function reStyleList(listElem) {
 
 function processBlocks(blocks) {
   for (var i = 0; i < blocks.length; i++) {
-    var text = blocks[i].textContent;
+    if (blocks[i].textContent.length <= MAGIC_TEXT_LENGTH)
+      continue;
+
+    var text = getTextNodes(blocks[i]);
     if (text.length > MAGIC_TEXT_LENGTH) {
       reStyle(blocks[i]);
+    }
+  }  
+}
+
+function processSnippets(snippets) {
+  for (var i = 0; i < snippets.length; i++) {
+    var text = snippets[i].textContent;
+    if (text.length > MAGIC_TEXT_LENGTH) {
+      reStyle(snippets[i]);
     }
   }  
 }
@@ -46,8 +64,11 @@ function processLists(lists) {
     //check if it's valid list
     var lis = list.getElementsByTagName("li");
     for (var j = 0; j < lis.length; j++) {
-      if (lis[j].textContent.length > MAGIC_TEXT_LENGTH) {
-        console.log(lis[j].textContent);
+      if (lis[j].textContent.length <= MAGIC_TEXT_LENGTH)
+        continue;
+
+      var text = getTextNodes(lis[j]);
+      if (text.length > MAGIC_TEXT_LENGTH) {
         reStyleList(list);
         break;
       }
@@ -55,21 +76,39 @@ function processLists(lists) {
   }
 }
 
-function process() {
-  var blocks = document.querySelectorAll("p, pre");
+var getTextNodes = function(el) {
+  return $(el).contents().filter(function() {
+    return this.nodeType === Node.TEXT_NODE;
+  }).text().trim();
+};
+
+function processDocument(doc) {
+  if (!doc)
+    return;
+
+  var blocks = doc.querySelectorAll("body, div, p, span, strong");
   processBlocks(blocks);
 
-  var lists = document.querySelectorAll("ol, ul");
+  var snippets = doc.querySelectorAll("pre");
+  processSnippets(snippets);
+
+  var lists = doc.querySelectorAll("ol, ul");
   processLists(lists);
+}
+
+function process() {
+  var start = new Date().getTime();
+
+  processDocument(document);
 
   var iframes = document.querySelectorAll("iframe");
   for (var i = 0; i < iframes.length; i++) {
-    var blocks = iframes[i].contentDocument.querySelectorAll("p, pre");
-    processBlocks(blocks);
-    
-    var lists = iframes[i].contentDocument.querySelectorAll("ol, ul");
-    processLists(lists);
+    processDocument(iframes[i].contentDocument);
   }
+
+  var end = new Date().getTime();
+  var time = end - start;
+  alert('Execution time: ' + time);
 }
 
 process();
