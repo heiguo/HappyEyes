@@ -15,9 +15,11 @@ function reStyle(elem) {
   // elem.style.textAlign = 'justify';
   
   // fuck helvetica
+  //console.log($(elem).css('font-family').toLowerCase());
   if ($(elem).css('font-family').toLowerCase().indexOf('arial') == 0 ||
-    $(elem).css('font-family').toLowerCase().indexOf('helvetica') == 0) {
-    $(elem).css('font-family', "Lucida Grande");
+    $(elem).css('font-family').toLowerCase().indexOf('helvetica') == 0 ||
+    $(elem).css('font-family').toLowerCase().indexOf("'helvetica neue'") == 0) {
+    $(elem).css('font-family', "Geneva");
   }
   elem.style.fontSize = '18px';
   elem.style.lineHeight = '175%';
@@ -25,6 +27,11 @@ function reStyle(elem) {
   if (width > 600) {
     elem.style.width = '600px';
   }
+}
+
+function reStylePre(elem) {
+  elem.style.fontSize = '16px';
+  elem.style.lineHeight = '150%';
 }
 
 function reStyleList(listElem) {
@@ -52,7 +59,7 @@ function processSnippets(snippets) {
   for (var i = 0; i < snippets.length; i++) {
     var text = snippets[i].textContent;
     if (text.length > MAGIC_TEXT_LENGTH) {
-      reStyle(snippets[i]);
+      reStylePre(snippets[i]);
     }
   }  
 }
@@ -97,7 +104,7 @@ function processDocument(doc) {
 }
 
 function process() {
-  var start = new Date().getTime();
+  // var start = new Date().getTime();
 
   processDocument(document);
 
@@ -106,9 +113,9 @@ function process() {
     processDocument(iframes[i].contentDocument);
   }
 
-  var end = new Date().getTime();
-  var time = end - start;
-  alert('Execution time: ' + time);
+  // var end = new Date().getTime();
+  // var time = end - start;
+  // alert('Execution time: ' + time);
 }
 
 process();
